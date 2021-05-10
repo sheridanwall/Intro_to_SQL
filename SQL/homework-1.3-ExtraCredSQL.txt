@@ -1,0 +1,253 @@
+# Sheridan Wall
+# Nov. 4, 2020
+# Homework 1.3 SQL Extra Credit
+
+mondial=# \d economy
+                        Table "public.economy"
+    Column    |         Type         | Collation | Nullable | Default 
+--------------+----------------------+-----------+----------+---------
+ country      | character varying(4) |           | not null | 
+ gdp          | numeric              |           |          | 
+ agriculture  | numeric              |           |          | 
+ service      | numeric              |           |          | 
+ industry     | numeric              |           |          | 
+ inflation    | numeric              |           |          | 
+ unemployment | numeric              |           |          | 
+Indexes:
+    "economykey" PRIMARY KEY, btree (country)
+Check constraints:
+    "economygdp" CHECK (gdp >= 0::numeric)
+
+In economy:
+0) Count the number of countries that get the majority of their GDP from industry (the only column and row you will see is a count)
+
+mondial=# SELECT count(country) FROM economy WHERE industry > service AND industry > agriculture; 
+ count 
+-------
+    26
+(1 row)
+
+
+In city:
+
+mondial=# \d city
+                         Table "public.city"
+   Column   |         Type          | Collation | Nullable | Default 
+------------+-----------------------+-----------+----------+---------
+ name       | character varying(50) |           | not null | 
+ country    | character varying(4)  |           | not null | 
+ province   | character varying(50) |           | not null | 
+ population | numeric               |           |          | 
+ latitude   | numeric               |           |          | 
+ longitude  | numeric               |           |          | 
+ elevation  | numeric               |           |          | 
+Indexes:
+    "citykey" PRIMARY KEY, btree (name, country, province)
+
+
+
+1) What 10 countries have the highest population of city dwellers?
+
+mondial=# SELECT sum(population), country FROM city GROUP BY country ORDER BY sum(population) DESC NULLS LAST LIMIT 10;
+    sum    | country 
+-----------+---------
+ 326058186 | CN
+ 129752758 | IND
+  93687185 | BR
+  81959659 | USA
+  72000673 | R
+  55998885 | J
+  50920843 | PK
+  49410900 | NGR
+  47137170 | MEX
+  46893102 | RI
+(10 rows)
+
+
+2) What 20 provinces have the highest population of city dwellers?
+
+mondial=# SELECT sum(population), province FROM city GROUP BY province ORDER BY sum(population) DESC NULLS LAST LIMIT 20;
+   sum    |     province     
+----------+------------------
+ 49915710 | Guangdong
+ 33570031 | South Korea
+ 30339716 | Jiangsu
+ 30200747 | Punjab
+ 28764171 | Maharashtra
+ 28456331 | São Paulo
+ 23287581 | Shandong
+ 22364857 | Egypt
+ 22315474 | Shanghai
+ 18640093 | Liaoning
+ 18154777 | Sindh
+ 16566502 | California
+ 16541711 | Uttar Pradesh
+ 16481172 | Taiwan
+ 15782040 | Distrito Federal
+ 15092613 | Hubei
+ 14324280 | Zhejiang
+ 14082792 | Lagos
+ 13756103 | Gujarat
+ 13710512 | İstanbul
+(20 rows)
+
+3) Same query, but get the number of cities in each province as well.
+mondial=# SELECT sum(population), count(name), province FROM city GROUP BY province ORDER BY sum(population) DESC NULLS LAST LIMIT 20;
+
+   sum    | count |     province     
+----------+-------+------------------
+ 49915710 |    17 | Guangdong
+ 33570031 |    23 | South Korea
+ 30339716 |    22 | Jiangsu
+ 30200747 |    24 | Punjab
+ 28764171 |    14 | Maharashtra
+ 28456331 |    57 | São Paulo
+ 23287581 |    25 | Shandong
+ 22364857 |    25 | Egypt
+ 22315474 |     1 | Shanghai
+ 18640093 |    19 | Liaoning
+ 18154777 |     6 | Sindh
+ 16566502 |    52 | California
+ 16541711 |    14 | Uttar Pradesh
+ 16481172 |    14 | Taiwan
+ 15782040 |     4 | Distrito Federal
+ 15092613 |    17 | Hubei
+ 14324280 |    13 | Zhejiang
+ 14082792 |     3 | Lagos
+ 13756103 |     8 | Gujarat
+ 13710512 |     1 | İstanbul
+(20 rows)
+
+4) Same query, but only show the provinces that have more than one city.
+
+mondial=# SELECT sum(population), count(name), province FROM city GROUP BY province HAVING count(name) > 1 ORDER BY sum(population) DESC NULLS LAST LIMIT 20;
+   sum    | count |     province     
+----------+-------+------------------
+ 49915710 |    17 | Guangdong
+ 33570031 |    23 | South Korea
+ 30339716 |    22 | Jiangsu
+ 30200747 |    24 | Punjab
+ 28764171 |    14 | Maharashtra
+ 28456331 |    57 | São Paulo
+ 23287581 |    25 | Shandong
+ 22364857 |    25 | Egypt
+ 18640093 |    19 | Liaoning
+ 18154777 |     6 | Sindh
+ 16566502 |    52 | California
+ 16541711 |    14 | Uttar Pradesh
+ 16481172 |    14 | Taiwan
+ 15782040 |     4 | Distrito Federal
+ 15092613 |    17 | Hubei
+ 14324280 |    13 | Zhejiang
+ 14082792 |     3 | Lagos
+ 13756103 |     8 | Gujarat
+ 13215228 |    21 | Rio de Janeiro
+ 13196260 |    19 | Heilongjiang
+
+5) Same query, but make sure you are only aggregating cities who's population values are not null. You can test for this by using "IS NOT NULL" (your resulting table will be slightly different than the one before.)
+
+mondial=# SELECT sum(population), count(name), province FROM city WHERE population IS NOT NULL GROUP BY province HAVING count(name) > 1 ORDER BY sum(population) DESC LIMIT 20;
+   sum    | count |     province     
+----------+-------+------------------
+ 49915710 |    17 | Guangdong
+ 33570031 |    23 | South Korea
+ 30339716 |    22 | Jiangsu
+ 30200747 |    24 | Punjab
+ 28764171 |    14 | Maharashtra
+ 28456331 |    57 | São Paulo
+ 23287581 |    25 | Shandong
+ 22364857 |    23 | Egypt
+ 18640093 |    19 | Liaoning
+ 18154777 |     6 | Sindh
+ 16566502 |    52 | California
+ 16541711 |    14 | Uttar Pradesh
+ 16481172 |    14 | Taiwan
+ 15782040 |     4 | Distrito Federal
+ 15092613 |    17 | Hubei
+ 14324280 |    13 | Zhejiang
+ 14082792 |     3 | Lagos
+ 13756103 |     6 | Gujarat
+ 13215228 |    21 | Rio de Janeiro
+ 13196260 |    19 | Heilongjiang
+(20 rows)
+
+6) Which provinces exist across multiple countries. (New thing here: you need to do count(distinct ))
+
+mondial=# SELECT count(DISTINCT country), province FROM city GROUP BY province HAVING count(DISTINCT country) > 1 ORDER BY count(DISTINCT country) DESC NULLS LAST;
+ count |     province     
+-------+------------------
+     4 | Amazonas
+     4 | Distrito Federal
+     3 | Western
+     3 | Central
+     3 | Eastern
+     3 | Northern
+     2 | Sucre
+     2 | Georgia
+     2 | La Paz
+     2 | La Rioja
+     2 | Lagos
+     2 | Limburg
+     2 | Luxembourg
+     2 | North West
+     2 | Bolívar
+     2 | Punjab
+     2 | Santa Cruz
+     2 | Córdoba
+     2 | Colón
+(19 rows)
+
+7) Redo query 5 so that you are only counting provinces that are in the same country. (Big hint you need to GROUP BY two things!)
+
+mondial=# SELECT sum(population), count(name), province FROM city WHERE population IS NOT NULL 
+GROUP BY province, country HAVING count(name) > 1 ORDER BY sum(population) DESC LIMIT 20;
+   sum    | count |    province    
+----------+-------+----------------
+ 49915710 |    17 | Guangdong
+ 33570031 |    23 | South Korea
+ 30339716 |    22 | Jiangsu
+ 28764171 |    14 | Maharashtra
+ 28456331 |    57 | São Paulo
+ 26939975 |    21 | Punjab
+ 23287581 |    25 | Shandong
+ 22364857 |    23 | Egypt
+ 18640093 |    19 | Liaoning
+ 18154777 |     6 | Sindh
+ 16566502 |    52 | California
+ 16541711 |    14 | Uttar Pradesh
+ 16481172 |    14 | Taiwan
+ 15092613 |    17 | Hubei
+ 14324280 |    13 | Zhejiang
+ 13929674 |     2 | Lagos
+ 13756103 |     6 | Gujarat
+ 13215228 |    21 | Rio de Janeiro
+ 13196260 |    19 | Heilongjiang
+ 12322336 |    14 | Metro Manila
+(20 rows)
+
+OR like this? :
+
+mondial=# SELECT sum(population), count(name), count(DISTINCT country), province FROM city WHERE population IS NOT NULL GROUP BY province, country HAVING count(name) > 1 ORDER BY sum(population) DESC LIMIT 20;
+   sum    | count | count |    province    
+----------+-------+-------+----------------
+ 49915710 |    17 |     1 | Guangdong
+ 33570031 |    23 |     1 | South Korea
+ 30339716 |    22 |     1 | Jiangsu
+ 28764171 |    14 |     1 | Maharashtra
+ 28456331 |    57 |     1 | São Paulo
+ 26939975 |    21 |     1 | Punjab
+ 23287581 |    25 |     1 | Shandong
+ 22364857 |    23 |     1 | Egypt
+ 18640093 |    19 |     1 | Liaoning
+ 18154777 |     6 |     1 | Sindh
+ 16566502 |    52 |     1 | California
+ 16541711 |    14 |     1 | Uttar Pradesh
+ 16481172 |    14 |     1 | Taiwan
+ 15092613 |    17 |     1 | Hubei
+ 14324280 |    13 |     1 | Zhejiang
+ 13929674 |     2 |     1 | Lagos
+ 13756103 |     6 |     1 | Gujarat
+ 13215228 |    21 |     1 | Rio de Janeiro
+ 13196260 |    19 |     1 | Heilongjiang
+ 12322336 |    14 |     1 | Metro Manila
+(20 rows)

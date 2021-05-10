@@ -1,0 +1,287 @@
+Sheridan Wall
+Nov. 1, 2020
+Homework 1.2: SQL Problem Set 1
+
+
+PART ONE:
+
+1. Top 10 countries by GDP:
+SELECT country,gdp FROM economy ORDER BY gdp LIMIT 10;
+ country |  gdp  
+---------+-------
+ TOK     |   1.5
+ NIUE    |    10
+ HELX    |    18
+ MNTS    |    29
+ TUV     |    38
+ WF      |    60
+ NAU     |   100
+ FALK    | 164.5
+ KIR     |   173
+ AXA     | 175.4
+(10 rows)
+
+2. List of countries with GDP below 20000:
+mondial=# SELECT country, gdp FROM economy WHERE gdp < 20000;
+ country |  gdp  
+---------+-------
+ AL      | 12800
+ MK      | 10650
+ MNE     |  4518
+ KOS     |  7150
+ AND     |  4800
+ FL      |  5113
+ BIH     | 18870
+ IS      | 14590
+ FO      |  2320
+ MC      |  5748
+ RSM     |  1866
+ M       |  9541
+ GBM     |  4076
+ MD      |  7932
+ GBZ     |  1106
+ GBG     |  2742
+ GBJ     |  5100
+ ARM     | 10440
+ GE      | 15950
+ WB      |  3700
+ GAZA    |  1700
+
+3. List of countries sorted by highest rate of inflation
+mondial=# SELECT country, inflation FROM economy WHERE inflation IS NOT NULL ORDER BY inflation DESC;
+ country | inflation 
+---------+-----------
+ SYR     |      59.1
+ YV      |      56.2
+ IR      |      42.3
+ SUD     |        25
+ RA      |      20.8
+ BY      |        19
+ WB      |        14
+ ER      |        13
+ MH      |      12.9
+ MW      |      12.2
+ RG      |      11.9
+ YE      |      11.8
+ SLE     |      11.1
+ BHT     |        11
+ GH      |        11
+ UZ      |      10.1
+ IND     |       9.6
+ JA      |       9.4
+ BI      |       9.3
+ ET      |         9
+ TM      |         9
+
+ 4. List of countries with majority of GDP coming from agriculture:
+ mondial=# SELECT country, gdp, agriculture FROM economy WHERE agriculture >= 50;
+ country |  gdp  | agriculture 
+---------+-------+-------------
+ SOL     |  1099 |          50
+ GUB     |   880 |          58
+ LB      |  1977 |        76.9
+ RCA     |  2050 |        56.6
+ SO      |  2372 |        59.3
+ COM     |   658 |          51
+ FALK    | 164.5 |          95
+(7 rows)
+
+5. List of countries ordered by highest unemployment & join with country table:
+mondial=# SELECT country.name, economy.country, economy.unemployment FROM economy JOIN country ON economy.country = country.code ORDER BY unemployment DESC NULLS LAST;
+               name               | country | unemployment 
+----------------------------------+---------+--------------
+ Zimbabwe                         | ZW      |           95
+ Nauru                            | NAU     |           90
+ Liberia                          | LB      |           85
+ Burkina Faso                     | BF      |           77
+ Turkmenistan                     | TM      |           60
+ Djibouti                         | DJI     |           59
+ Congo                            | RCB     |           53
+ Senegal                          | SN      |           48
+ Nepal                            | NEP     |           46
+ Bosnia and Herzegovina           | BIH     |         44.3
+ Haiti                            | RH      |         40.6
+ Kenya                            | EAK     |           40
+ Eswatini                         | SD      |           40
+ Marshall Islands                 | MH      |           36
+ Yemen                            | YE      |           35
+ Afghanistan                      | AFG     |           35
+ Grenada                          | WG      |         33.5
+ Kosovo                           | KOS     |         30.9
+ Cameroon                         | CAM     |           30
+ Mauritania                       | RIM     |           30
+ Mali                             | RMM     |           30
+:
+
+
+6. Original query:
+mondial=# SELECT country, gdp, unemployment FROM economy WHERE gdp <  10000 ORDER BY unemployment LIMIT 20;
+ country |  gdp  | unemployment 
+---------+-------+--------------
+ GBG     |  2742 |          0.9
+ GBJ     |  5100 |          1.7
+ VU      |   828 |          1.7
+ MC      |  5748 |            2
+ KIR     |   173 |            2
+ GBM     |  4076 |            2
+ SY      |  1271 |            2
+ BHT     |  2133 |          2.1
+ FL      |  5113 |          2.3
+ TJ      |  8513 |          2.5
+ GBZ     |  1106 |            3
+ AND     |  4800 |            4
+ CAYM    |  2250 |            4
+ FALK    | 164.5 |          4.1
+ PAL     |   221 |          4.2
+ KN      |   767 |          4.5
+ MD      |  7932 |          5.8
+ MNTS    |    29 |            6
+ VIRG    |  1200 |          6.2
+ M       |  9541 |          6.4
+(20 rows)
+
+
+7. Bonus question: List top 15 countries by dollar amount of GDP coming from agriculture where percent is over 25%:
+
+PART TWO:
+
+1. Top 10 languages in respective countries
+
+mondial=# SELECT * FROM language ORDER BY percentage DESC NULLS LAST LIMIT 10;
+ country |      name       | percentage 
+---------+-----------------+------------
+ FALK    | English         |        100
+ SPMI    | French          |        100
+ CV      | Krioulo         |        100
+ HELX    | English         |        100
+ ROK     | Korean          |        100
+ KP      | Korean          |        100
+ J       | Japanese        |        100
+ PITC    | Pitcairn Creole |        100
+ GBM     | English         |        100
+ GAZA    | Arabic          |       99.8
+(10 rows)
+
+2. List of 10 countries with most languages
+
+mondial=# SELECT count(country), country FROM language GROUP BY country ORDER BY count(country) DESC LIMIT 10;
+ count | country 
+-------+---------
+    35 | CN
+    28 | IND
+    27 | R
+    27 | USA
+    22 | CDN
+    20 | GB
+    18 | NGR
+    16 | CAM
+    16 | EAT
+    16 | F
+(10 rows)
+
+3. List of 10 countries with most languages + country name
+
+mondial=# SELECT count(language.country), country.name FROM language JOIN country ON country = country.code GROUP BY country.name ORDER BY count(language.country) DESC LIMIT 10;
+ count |      name      
+-------+----------------
+    35 | China
+    28 | India
+    27 | United States
+    27 | Russia
+    22 | Canada
+    20 | United Kingdom
+    18 | Nigeria
+    16 | Cameroon
+    16 | France
+    16 | Tanzania
+(10 rows)
+
+
+4. List of 10 most common languages from country to country
+
+mondial=# SELECT count(name), name FROM language GROUP BY name ORDER BY count(name) DESC LIMIT 10;
+ count |    name    
+-------+------------
+    87 | English
+    56 | Arabic
+    52 | French
+    41 | Spanish
+    26 | German
+    21 | Russian
+    20 | Portuguese
+    17 | Italian
+    16 | Turkish
+    15 | Fulfulde
+(10 rows)
+
+5. List of 20 most common languages w/ average population of speakers
+
+mondial=# SELECT count(name), name, AVG(percentage) FROM language GROUP BY name ORDER BY count(name) DESC LIMIT 10;
+ count |    name    |         avg         
+-------+------------+---------------------
+    87 | English    | 31.0479365079365079
+    56 | Arabic     | 29.8173913043478261
+    52 | French     | 23.7571428571428571
+    41 | Spanish    | 53.2527777777777778
+    26 | German     | 14.1850000000000000
+    21 | Russian    | 16.2761904761904762
+    20 | Portuguese | 22.0861111111111111
+    17 | Italian    | 16.9714285714285714
+    16 | Turkish    |  9.1093750000000000
+    15 | Fulfulde   | 12.7600000000000000
+(10 rows)
+
+6. List of 20 most common languages + average percentage of speakers in population excluding those populations less than 21 percent
+
+mondial=# SELECT count(name), name, AVG(percentage) FROM language GROUP BY name HAVING AVG(percentage) > 21 ORDER BY count(name) DESC LIMIT 20;
+ count |       name       |         avg         
+-------+------------------+---------------------
+    87 | English          | 31.0479365079365079
+    56 | Arabic           | 29.8173913043478261
+    52 | French           | 23.7571428571428571
+    41 | Spanish          | 53.2527777777777778
+    20 | Portuguese       | 22.0861111111111111
+     9 | Albanian         | 25.5944444444444444
+     8 | Serbo-Croatian   | 48.1500000000000000
+     8 | Antillean Creole | 41.4250000000000000
+     8 | Romanian         | 22.1000000000000000
+     8 | Cantonese        | 23.6500000000000000
+     7 | Malay            | 35.8857142857142857
+     7 | Dutch            | 31.1285714285714286
+     6 | Somali           | 27.5166666666666667
+     5 | Azerbaijani      | 23.2280000000000000
+     5 | Greek            | 31.1000000000000000
+     4 | Papiamento       | 56.4500000000000000
+     4 | Dari             | 32.7250000000000000
+     4 | Danish           | 28.3775000000000000
+     4 | Chewa            | 25.3000000000000000
+     4 | Haitian Creole   | 28.2500000000000000
+(20 rows)
+
+7. Modify above query with only languages spoken in more than 4 countries & order highest avg percent of speakers 
+mondial=# SELECT count(name), name, AVG(percentage) FROM language GROUP BY name HAVING count(name) > 4 ORDER BY AVG(percentage) DESC LIMIT 20;
+ count |       name       |         avg         
+-------+------------------+---------------------
+    41 | Spanish          | 53.2527777777777778
+     8 | Serbo-Croatian   | 48.1500000000000000
+     8 | Antillean Creole | 41.4250000000000000
+     7 | Malay            | 35.8857142857142857
+     7 | Dutch            | 31.1285714285714286
+     5 | Greek            | 31.1000000000000000
+    87 | English          | 31.0479365079365079
+    56 | Arabic           | 29.8173913043478261
+     6 | Somali           | 27.5166666666666667
+     9 | Albanian         | 25.5944444444444444
+    52 | French           | 23.7571428571428571
+     8 | Cantonese        | 23.6500000000000000
+     5 | Azerbaijani      | 23.2280000000000000
+     8 | Romanian         | 22.1000000000000000
+    20 | Portuguese       | 22.0861111111111111
+     6 | Bengali          | 19.5333333333333333
+     6 | Kiribati         | 18.4000000000000000
+     5 | Bulgarian        | 17.7200000000000000
+     7 | Hungarian        | 17.0571428571428571
+    17 | Italian          | 16.9714285714285714
+(20 rows)
+
+
